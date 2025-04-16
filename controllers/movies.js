@@ -1,13 +1,16 @@
-import { MovieModel } from "../model/sql/movie.js";
 import { validateMovie, validatePartialMovie } from '../Schemas/movies.js';
 
 export class MovieController{
 
-    static async getAll(req,res){
+    constructor({movieModel}){
+        this.movieModel = movieModel
+    }
+
+    getAll = async (req,res)=>{
         try{
             const { genre } = req.query;
             if(genre){
-                const movies = await MovieModel.getAllByGenre({genre});
+                const movies = await this.movieModel.getAllByGenre({genre});
                 if(movies.length>0){
                     res.status(200).json(movies);
                 }else{
@@ -17,7 +20,7 @@ export class MovieController{
                     })
                 }
             }else{
-                const movies = await MovieModel.getAll();
+                const movies = await this.movieModel.getAll();
                 res.status(200).json(movies);
             }
         }catch(error){
@@ -30,10 +33,10 @@ export class MovieController{
         }
     }
 
-    static async getById (req,res){
+    getById = async (req,res)=>{
         try{
             const { id } = req.params;
-            const movie = await MovieModel.getById({id});
+            const movie = await this.movieModel.getById({id});
             if(movie){
                 res.status(200).json(movie);
             }else{
@@ -49,7 +52,7 @@ export class MovieController{
         }
     }
 
-    static async create (req,res){
+    create = async (req,res)=>{
         const result = validateMovie(req.body);
         try{
             if(!result.error){
@@ -62,7 +65,7 @@ export class MovieController{
                     rate,
                     poster
                 } = req.body;
-                const newMovie = await MovieModel.create({input: result.data});
+                const newMovie = await this.movieModel.create({input: result.data});
                 if(newMovie){
                     res.status(201).json(newMovie);
                 }else{
@@ -81,12 +84,12 @@ export class MovieController{
         }
     }
 
-    static async update (req,res){
+    update = async (req,res)=>{
         try{
             const { id } = req.params;
             const result = validatePartialMovie(req.body);
             if(result){
-                const updatedMovie = await MovieModel.update({id, input: result.data})
+                const updatedMovie = await this.movieModel.update({id, input: result.data})
                 if(updatedMovie>0){
                     res.status(200).json({message: 'La pelicula ha sido actualizada'});
                 }else{
@@ -105,10 +108,10 @@ export class MovieController{
         }
     }
 
-    static async delete (req,res) {
+    delete = async (req,res)=>{
         try{
             const { id } = req.params;
-            const deletedMovie = await MovieModel.delete({id});
+            const deletedMovie = await this.movieModel.delete({id});
             if(deletedMovie>0){
                 res.status(200).json({message: 'Pelicula eliminada correctamente'});
             }else{
