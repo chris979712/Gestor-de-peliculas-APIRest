@@ -1,7 +1,7 @@
 import zod from 'zod'
 
 const movieSchema = zod.object({
-    tittle: zod.string({
+    title: zod.string({
         invalid_type_error: 'Movie tittle must be a string',
         required_error: 'Movie tittle is required'
     }),
